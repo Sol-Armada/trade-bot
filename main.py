@@ -21,24 +21,23 @@ class TradeBot(commands.Bot):
             f"\n-> Starting Bot on Python {platform.python_version()}, "
             f"discord.py {discord.__version__}\n"
         )
+
+        # load the cogs
         for filename in os.listdir(os.path.join(self.here, "cogs")):
             if filename.endswith("py"):
                 self.load_extension(f"cogs.{filename[:-3]}")
                 print(filename, "loaded.")
+
+        # load the tasks
+        # check requirements for self updating
+        # if os.environ("GITHUB_TOKEN") is not None and os.environ("GITHUB_REPO") is not None and os.environ("DOWNLOAD_LOC") is not None:
+        #     self.load_extension(f"tasks.updateTask")
 
     def run(self):
         return super().run(token)
 
     async def on_ready(self):
         print(f"We have logged in as {self.user}")
-#
-#
-# @bot.slash_command(guild_ids=[91981365452488704])
-# async def hello(ctx):
-#     await ctx.respond("Hello!")
-#
-#
-
 
 if __name__ == "__main__":
     bot = TradeBot()

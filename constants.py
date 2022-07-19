@@ -127,34 +127,6 @@ class Constants:
         ]
     }
 
-    planets = {
-        "Microtech": [
-            "test_123"
-        ],
-        "ArcCorp": [
-            "test_789"
-            ],
-        "Hurston": [
-            "test_012"
-            ],
-        "Crusader": [
-            "test_456"
-        ],
-    }
-
-    rest_stops = {
-        "ARC": {
-            "L1",
-            "L2",
-            "L3"
-        },
-        "CRU": {
-            "L1",
-            "L2",
-            "L3"
-        },
-    }
-
     items = {
         "Agricium": {
             "SCU": 6,
