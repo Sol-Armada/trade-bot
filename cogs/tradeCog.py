@@ -55,7 +55,7 @@ from fuzzywuzzy import fuzz, process
 #     async def none_callback(self, interaction: discord.Interaction):
 #         await interaction.response.send_message("Okay! I will cancel this entry.", ephemeral=True)
 
-class LocationSelection(discord.ui.View):
+class CreateBuy(discord.ui.View):
     @discord.ui.select(
         placeholder="Choose a location",
         min_values=1, max_values=1,
@@ -86,7 +86,7 @@ class TradeCog(commands.Cog):
 
     @commands.slash_command()
     async def buy(self, ctx: discord.ApplicationContext):
-        await ctx.respond(view=LocationSelection(), ephemeral=True)
+        await ctx.respond(view=CreateBuy(), ephemeral=True)
         """
         choose buy location
         enter commodity
