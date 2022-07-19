@@ -51,13 +51,21 @@ class CreateBuy(discord.ui.View):
     @discord.ui.select(
         placeholder="Choose a location",
         min_values=1, max_values=1,
-        options=Constants.outer_options
+        options=[discord.SelectOption(label=name) for name in Constants.trade_options]
     )
     async def select_callback(self, select, interaction: discord.Interaction):
+        # build the options list
+        options = []
+        for name in Constants.trade_options[select.values[0]]:
+            options.append(discord.SelectOption(label=name))
+
         # create the inner location selection object
         s = discord.ui.Select(placeholder="Choose an inner location", min_values=1, max_values=1)
-        s.options = Constants.inner_options[select.values[0]]
-        s.callback = self.inner_callback
+        s.options = options
+        if isinstance(Constants.trade_options[select.values[0]], dict):
+            s.callback = self.outpost_callback
+        else:
+            s.callback = self.trade_information_callback
 
         # create the view
         view = discord.ui.View()
@@ -67,7 +75,29 @@ class CreateBuy(discord.ui.View):
         #send it
         await interaction.response.send_message(view=view, ephemeral=True)
 
-    async def inner_callback(self, interaction: discord.Interaction):
+    async def outpost_callback(self, interaction: discord.Interaction):
+        # get the previously selected value
+        selected = interaction.data["values"][0]
+
+        # build the options list
+        options = []
+        for name in Constants.trade_options["Planet/Moon Outpost"][selected]:
+            options.append(discord.SelectOption(label=name))
+
+        # create the outpost location selection object
+        s = discord.ui.Select(placeholder="Choose an inner location", min_values=1, max_values=1)
+        s.options = options
+        s.callback = self.trade_information_callback
+
+        # create the view
+        view = discord.ui.View()
+        # add the object to the view
+        view.add_item(s)
+
+        #send it
+        await interaction.response.send_message(view=view, ephemeral=True)
+
+    async def trade_information_callback(self, interaction: discord.Interaction):
         selected = interaction.data["values"][0]
 
         # create the modal
