@@ -1,2 +1,5 @@
 py-cord==2.0.0
 snowflake-id==0.0.2
+python-dotenv==0.20.0
+python-Levenshtein==0.12.2
+fuzzywuzzy==0.18.0
