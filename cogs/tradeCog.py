@@ -61,7 +61,6 @@ class LocationSelection(discord.ui.View):
         min_values=1, max_values=1,
         options=Constants.outer_options
     )
-
     async def select_callback(self, select, interaction: discord.Interaction):
         # create the inner location selection object
         s = discord.ui.Select(placeholder="Choose an inner location", min_values=1, max_values=1)
@@ -111,21 +110,3 @@ class TradeCog(commands.Cog):
 
 def setup(bot: commands.Bot):
     bot.add_cog(TradeCog(bot))
-
-
-
-
-# class MyModal(discord.ui.Modal):
-#     def __init__(self, *args, **kwargs) -> None:
-#         super().__init__(*args, **kwargs)
-#
-#         self.add_item(discord.ui.InputText(label="Short Input"))
-#         self.add_item(discord.ui.InputText(label="Long Input", style=discord.InputTextStyle.long))
-#
-#     async def callback(self, interaction: discord.Interaction):
-#         embed = discord.Embed(title="Modal Results")
-#         embed.add_field(name="Short Input", value=self.children[0].value)
-#         embed.add_field(name="Long Input", value=self.children[1].value)
-#         await interaction.response.send_message(embeds=[embed])
-
-
