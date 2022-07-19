@@ -1,3 +1,5 @@
 .env
 **/*.pyc
 .temp
+venv/
+.vscode/
