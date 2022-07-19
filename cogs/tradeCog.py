@@ -68,12 +68,12 @@ class LocationSelection(discord.ui.View):
         s.callback = self.inner_callback
 
         # create the view
-        v = discord.ui.View()
+        view = discord.ui.View()
         # add the object to the view
-        v.add_item(s)
+        view.add_item(s)
 
         #send it
-        await interaction.response.send_message(view=v, ephemeral=True)
+        await interaction.response.send_message(view=view, ephemeral=True)
 
     async def inner_callback(self, interaction: discord.Interaction):
         selected = interaction.data['values'][0]
