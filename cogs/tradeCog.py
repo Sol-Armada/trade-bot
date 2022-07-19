@@ -1,17 +1,9 @@
-from ast import Constant
-from asyncio import constants
-from code import interact
-from dis import disco
-import json
-from typing import Container
-from urllib import response
-
 import discord
 from discord.ext import commands
 from constants import Constants
 from objects.trade import Trade
 from fuzzywuzzy import fuzz, process
-
+from utilities import Utilities
 
 # class LocationSearch(discord.ui.Modal):
 #     def __init__(self, *args, **kwargs) -> None:
@@ -76,8 +68,26 @@ class CreateBuy(discord.ui.View):
         await interaction.response.send_message(view=view, ephemeral=True)
 
     async def inner_callback(self, interaction: discord.Interaction):
-        selected = interaction.data['values'][0]
-        await interaction.response.send_message(f"Buying from {selected}", ephemeral=True)
+        selected = interaction.data["values"][0]
+
+        # create the modal
+        m = discord.ui.Modal(title="Trade information")
+        m.callback = self.cost_modal_callback
+
+        # create some text inputs
+        t1 = discord.ui.InputText(label="purchase price", custom_id="purchase_price")
+
+        # add them to the modal
+        m.add_item(t1)
+
+        await interaction.response.send_modal(modal=m)
+
+    async def cost_modal_callback(self, interaction: discord.Interaction):
+        i = Utilities.get_values_from_modal(interaction)
+
+        print(i)
+
+        await interaction.response.send_message(f"some data {i}", ephemeral=True)
 
 class TradeCog(commands.Cog):
     def __init__(self, bot):
