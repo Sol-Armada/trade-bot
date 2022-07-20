@@ -29,9 +29,10 @@ class TradeBot(commands.Bot):
                 print(filename, "loaded.")
 
         # load the tasks
-        # check requirements for self updating
-        # if os.environ("GITHUB_TOKEN") is not None and os.environ("GITHUB_REPO") is not None and os.environ("DOWNLOAD_LOC") is not None:
-        #     self.load_extension(f"tasks.updateTask")
+        for filename in os.listdir(os.path.join(self.here, "tasks")):
+            if filename.endswith("py"):
+                self.load_extension(f"tasks.{filename[:-3]}")
+                print(filename, "loaded.")
 
     def run(self):
         return super().run(token)

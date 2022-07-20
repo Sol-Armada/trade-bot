@@ -3,3 +3,4 @@
 .temp
 venv/
 .vscode/
+current_release.txt
