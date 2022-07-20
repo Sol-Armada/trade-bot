@@ -1,4 +1,5 @@
 import os
+from re import M
 import shutil
 import subprocess
 import tarfile
@@ -17,7 +18,8 @@ class UpdateTask(commands.Cog):
             self.download_loc = os.getenv("DOWNLOAD_LOC", "/tmp/")
             self.client = requests.session()
             self.client.headers = {
-                "Accept": "application/vnd.github+json"
+                "Accept": "application/vnd.github+json",
+                "User-Agent": "robo-request"
             }
             if not exists("./current_release.txt"):
                 open("./current_release.txt", 'a').close()
@@ -26,7 +28,7 @@ class UpdateTask(commands.Cog):
     @tasks.loop(seconds=90)
     async def check(self):
         resp = self.client.get(f"https://api.github.com/repos/{os.getenv('GITHUB_REPO', 'sol-armada/discord-bot')}/releases")
-        print(resp.request.headers)
+
         rate_limit = int(resp.headers.get("X-RateLimit-Remaining"))
         if rate_limit > 0 and resp.status_code == 200:
                 latest_release = resp.json()[0]
