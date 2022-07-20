@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class UpdateTask(commands.Cog):
+    download_loc = None
     def __init__(self):
         if bool(os.getenv("CHECK_FOR_UPDATES")):
             self.download_loc = self.download_loc
@@ -40,6 +41,10 @@ class UpdateTask(commands.Cog):
             reset_time = datetime.fromtimestamp(int(resp.headers.get("X-RateLimit-Reset")))
             time_left = reset_time - datetime.now()
             print(f"Github Rate Limited. Reset in {time_left.seconds} seconds")
+
+    @check.error
+    async def check_error(seld, error):
+        print(error)
 
     def get_current_release(self) -> str:
         f = open("./current_release.txt", "r")
