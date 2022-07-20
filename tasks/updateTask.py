@@ -12,7 +12,7 @@ load_dotenv()
 
 class UpdateTask(commands.Cog):
     def __init__(self):
-        if os.getenv("CHECK_FOR_UPDATES"):
+        if bool(os.getenv("CHECK_FOR_UPDATES")):
             self.download_loc = self.download_loc
             self.client = requests.session()
             self.client.headers = {
@@ -55,7 +55,7 @@ class UpdateTask(commands.Cog):
             tf.extractall(path=self.download_loc)
             shutil.move(os.path.join(self.download_loc, folder_name), "./")
             tf.close()
-        if os.environ["SUPERVISOR"]:
+        if bool(os.getenv("SUPERVISOR")):
             subprocess.run(["supervisorctl", "restart", "all"])
 
 def setup(bot: commands.Bot):
