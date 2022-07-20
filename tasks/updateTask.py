@@ -14,7 +14,7 @@ class UpdateTask(commands.Cog):
     download_loc = None
     def __init__(self):
         if bool(os.getenv("CHECK_FOR_UPDATES")):
-            self.download_loc = self.download_loc
+            self.download_loc = os.getenv("DOWNLOAD_LOC", "/tmp/")
             self.client = requests.session()
             self.client.headers = {
                 "Accept": "application/vnd.github+json"
@@ -25,7 +25,8 @@ class UpdateTask(commands.Cog):
 
     @tasks.loop(seconds=90)
     async def check(self):
-        resp = self.client.get(f"https://api.github.com/repos/{os.getenv('GITHUB_REPO') or 'sol-armada/discord-bot'}/releases")
+        resp = self.client.get(f"https://api.github.com/repos/{os.getenv('GITHUB_REPO', 'sol-armada/discord-bot')}/releases")
+        print(resp.request.headers)
         rate_limit = int(resp.headers.get("X-RateLimit-Remaining"))
         if rate_limit > 0 and resp.status_code == 200:
                 latest_release = resp.json()[0]
@@ -55,7 +56,7 @@ class UpdateTask(commands.Cog):
         f.write(str(id))
 
     def apply_release(self):
-        with tarfile.open(f"{self.download_loc}/bot.tar.gz", "r") as tf:
+        with tarfile.open(os.path(self.download_loc, "bot.tar.gz"), "r") as tf:
             folder_name = tf.next().name
             tf.extractall(path=self.download_loc)
             shutil.move(os.path.join(self.download_loc, folder_name), "./")
