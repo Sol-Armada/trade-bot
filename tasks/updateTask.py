@@ -46,7 +46,7 @@ class UpdateTask(commands.Cog):
                         with open(os.path.join(self.download_loc, "bot.tar.gz"), 'wb') as f:
                             f.write(resp.content)
                         self.save_current_release(latest_release["id"])
-                        #self.apply_release()
+                        self.apply_release()
                         self.save_release_info(latest_release)
             else:
                 reset_time = datetime.fromtimestamp(int(resp.headers.get("X-RateLimit-Reset")))
