@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 import tarfile
 import requests
 from datetime import datetime
@@ -11,7 +12,8 @@ load_dotenv()
 
 class UpdateTask(commands.Cog):
     def __init__(self):
-        if os.environ["CHECK_FOR_UPDATES"] or False:
+        if os.getenv("CHECK_FOR_UPDATES"):
+            self.download_loc = self.download_loc
             self.client = requests.session()
             self.client.headers = {
                 "Accept": "application/vnd.github+json"
@@ -24,14 +26,13 @@ class UpdateTask(commands.Cog):
     async def check(self):
         resp = self.client.get(f"https://api.github.com/repos/{os.getenv('GITHUB_REPO') or 'sol-armada/discord-bot'}/releases")
         rate_limit = int(resp.headers.get("X-RateLimit-Remaining"))
-        if rate_limit > 0:
-            if resp.status_code == 200:
+        if rate_limit > 0 and resp.status_code == 200:
                 latest_release = resp.json()[0]
                 download_link = latest_release["tarball_url"]
                 if latest_release["id"] != self.get_current_release():
                     # download the latest release
                     resp = self.client.get(download_link)
-                    with open(f"{os.environ['DOWNLOAD_LOC']}/bot.tar.gz", 'wb') as f:
+                    with open(f"{self.download_loc}/bot.tar.gz", 'wb') as f:
                         f.write(resp.content)
                     self.save_current_release(latest_release["id"])
                     self.apply_release()
@@ -49,11 +50,13 @@ class UpdateTask(commands.Cog):
         f.write(str(id))
 
     def apply_release(self):
-        with tarfile.open(f"{os.environ['DOWNLOAD_LOC']}/bot.tar.gz", "r") as tf:
+        with tarfile.open(f"{self.download_loc}/bot.tar.gz", "r") as tf:
             folder_name = tf.next().name
-            tf.extractall(path=os.environ['DOWNLOAD_LOC'])
-            shutil.move(os.path.join(os.environ['DOWNLOAD_LOC'], folder_name), "./")
+            tf.extractall(path=self.download_loc)
+            shutil.move(os.path.join(self.download_loc, folder_name), "./")
             tf.close()
+        if os.environ["SUPERVISOR"]:
+            subprocess.run(["supervisorctl", "restart", "all"])
 
 def setup(bot: commands.Bot):
     bot.add_cog(UpdateTask())
