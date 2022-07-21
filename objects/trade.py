@@ -6,18 +6,17 @@ gen = SnowflakeGenerator(1)
 
 @dataclass
 class Trade:
-    commodity: str
+    commodity: str = ""
+    purchase_amount: int = 0
+    purchase_location: str = ""
+    purchase_unit_price: float = 0
 
-    purchase_amount: int
-    purchase_location: str
-    purchase_unit_price: float
+    sell_amount: int = 0
+    sell_location: str = ""
+    sell_price: float = 0
 
-    sell_amount: int
-    sell_location: str
-    sell_price: float
-
-    trader_id: int  # grab discord member.display_name upon lookup
-    status: Constants.TradeStatus
+    trader_id: int = -1  # grab discord member.display_name upon lookup
+    status: Constants.TradeStatus = Constants.TradeStatus.PENDING
 
     def __post_init__(self):
         self.receipt_id = next(gen)
@@ -34,3 +33,7 @@ class Trade:
 
     def save(self):
         ...
+
+    @classmethod
+    def from_json(cls, json_data):
+        return cls(**json_data)

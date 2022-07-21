@@ -20,10 +20,10 @@ class Constants:
                 "Shubin Mining Facility SMCa-8"
             ],
             "Cellin": [
-                "Gallete Farms"
-                "Hickes Research"
-                "Terra Mills Hydrofarm"
-                "Tram & Myers"
+                "Gallete Farms",
+                "Hickes Research",
+                "Terra Mills Hydrofarm",
+                "Tram & Myers",
                 "Private Property"
             ],
             "Clio": [
@@ -131,7 +131,7 @@ class Constants:
         "Agricium": {
             "SCU": 6,
         },
-        "Agricultrual Supplies": {
+        "Agricultural Supplies": {
             "SCU": 0.01,
         },
         "Altruciatoxin": {

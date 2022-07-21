@@ -1,6 +1,6 @@
-.env
+*.env
 **/*.pyc
-.temp
+*.temp
 venv/
 .vscode/
 current_release.txt

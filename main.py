@@ -40,6 +40,7 @@ class TradeBot(commands.Bot):
     async def on_ready(self):
         print(f"We have logged in as {self.user}")
 
+
 if __name__ == "__main__":
     bot = TradeBot()
     bot.run()
