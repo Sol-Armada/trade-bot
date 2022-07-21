@@ -1,6 +1,5 @@
 import json
 import os
-from platform import release
 import shutil
 import subprocess
 import tarfile
@@ -9,17 +8,16 @@ import requests
 from datetime import datetime
 from os.path import exists
 from discord.ext import tasks, commands
-from dotenv import load_dotenv
-
-from main import TradeBot
-
-load_dotenv()
+from utilities import Log, LogLevel
+from main import USE_SUPERVISOR, LOG_LEVEL, CHECK_FOR_UPDATES 
 
 
 class UpdateTask(commands.Cog):
     download_loc = None
     def __init__(self):
-        if os.getenv("CHECK_FOR_UPDATES", "false").lower() in ('true', '1', 't'):
+        self.log = Log("main", LOG_LEVEL)
+
+        if CHECK_FOR_UPDATES:
             self.download_loc = os.getenv("DOWNLOAD_LOC", "/tmp/")
             self.client = requests.session()
             self.client.headers = {
@@ -99,7 +97,7 @@ class UpdateTask(commands.Cog):
                 shutil.move(os.path.join(self.download_loc, folder_name), os.getcwd(), copy_function=shutil.copytree)
 
                 tf.close()
-            if os.getenv("SUPERVISOR", "false").lower()  in ('true', '1', 't'):
+            if USE_SUPERVISOR:
                 subprocess.run(["supervisorctl", "restart", "all"])
         except Exception as e:
             print(e)
