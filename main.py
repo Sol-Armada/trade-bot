@@ -9,6 +9,10 @@ load_dotenv()
 intents = discord.Intents.default()
 token = os.getenv("TOKEN")
 
+CHECK_FOR_UPDATES = os.getenv(
+    "CHECK_FOR_UPDATES", "false").lower() in ("true", "1", "t")
+USE_SUPERVISOR = os.getenv("USE_SUPERVISOR", "false").lower() in ("true", "1", "t")
+
 
 class TradeBot(commands.Bot):
     def __init__(self):
