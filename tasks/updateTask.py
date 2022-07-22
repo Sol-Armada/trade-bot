@@ -10,7 +10,6 @@ from datetime import datetime
 from os.path import exists
 from discord.ext import tasks, commands
 from dotenv import load_dotenv
-
 from main import TradeBot
 
 load_dotenv()
@@ -18,6 +17,7 @@ load_dotenv()
 
 class UpdateTask(commands.Cog):
     download_loc = None
+
     def __init__(self):
         if os.getenv("CHECK_FOR_UPDATES", "false").lower() in ('true', '1', 't'):
             self.download_loc = os.getenv("DOWNLOAD_LOC", "/tmp/")
@@ -28,30 +28,33 @@ class UpdateTask(commands.Cog):
             }
             if not exists("./current_release.txt"):
                 open("./current_release.txt", 'a').close()
-            
+
             self.check.start()
 
     @tasks.loop(seconds=90)
     async def check(self):
         try:
-            resp = self.client.get(f"https://api.github.com/repos/{os.getenv('GITHUB_REPO', 'sol-armada/discord-bot')}/releases")
-            
+            resp = self.client.get(
+                f"https://api.github.com/repos/{os.getenv('GITHUB_REPO', 'sol-armada/discord-bot')}/releases")
+
             rate_limit = int(resp.headers.get("X-RateLimit-Remaining"))
             if rate_limit > 0 and resp.status_code == 200:
-                    latest_release = resp.json()[0]
-                    download_link = latest_release["tarball_url"]
+                latest_release = resp.json()[0]
+                download_link = latest_release["tarball_url"]
 
-                    if latest_release["id"] != self.get_current_release() and not bool(latest_release["draft"]):
-                        resp = self.client.get(download_link)
-                        with open(os.path.join(self.download_loc, "bot.tar.gz"), 'wb') as f:
-                            f.write(resp.content)
-                        self.save_current_release(latest_release["id"])
-                        self.apply_release()
-                        self.save_release_info(latest_release)
+                if latest_release["id"] != self.get_current_release() and not bool(latest_release["draft"]):
+                    resp = self.client.get(download_link)
+                    with open(os.path.join(self.download_loc, "bot.tar.gz"), 'wb') as f:
+                        f.write(resp.content)
+                    self.save_current_release(latest_release["id"])
+                    self.apply_release()
+                    self.save_release_info(latest_release)
             else:
-                reset_time = datetime.fromtimestamp(int(resp.headers.get("X-RateLimit-Reset")))
+                reset_time = datetime.fromtimestamp(
+                    int(resp.headers.get("X-RateLimit-Reset")))
                 time_left = reset_time - datetime.now()
-                print(f"Github Rate Limited. Reset in {time_left.seconds} seconds")
+                print(
+                    f"Github Rate Limited. Reset in {time_left.seconds} seconds")
         except Exception as e:
             print(e)
 
@@ -96,13 +99,15 @@ class UpdateTask(commands.Cog):
             with tarfile.open(os.path.join(self.download_loc, "bot.tar.gz"), "r") as tf:
                 folder_name = tf.next().name
                 tf.extractall(path=self.download_loc)
-                shutil.move(os.path.join(self.download_loc, folder_name), os.getcwd(), copy_function=shutil.copytree)
+                shutil.move(os.path.join(self.download_loc, folder_name),
+                            os.getcwd(), copy_function=shutil.copytree)
 
                 tf.close()
-            if os.getenv("SUPERVISOR", "false").lower()  in ('true', '1', 't'):
+            if os.getenv("SUPERVISOR", "false").lower() in ('true', '1', 't'):
                 subprocess.run(["supervisorctl", "restart", "all"])
         except Exception as e:
             print(e)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(UpdateTask())

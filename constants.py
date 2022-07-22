@@ -276,9 +276,3 @@ class Constants:
             "SCU": 0.01,
         },
     }
-
-    class TradeStatus(Enum):
-        PENDING = 0
-        CANCELED = 1
-        COMPLETE = 2
-
