@@ -265,6 +265,25 @@ class TradeCog(commands.Cog):
         await ctx.interaction.response.send_modal(SellForm(commodity_sell_values, ctx.author.id))
 
     @commands.slash_command(
+        description="Lost Cargo"
+    )
+    async def lost(self, ctx: discord.ApplicationContext):
+        trader = Player(ctx.author.id)
+
+        pending_trades = trader.pending_trades
+
+        if not pending_trades:
+            await ctx.respond("We have no record of pending trades for you.", ephemeral=True)
+            return
+
+        final_message = "Trades lost\n"
+        for trade in pending_trades:
+            trade.mark_as_lost()
+            final_message += f"{trade}\n"
+
+        await ctx.respond(final_message, ephemeral=True)
+
+    @commands.slash_command(
         description="See the leaderboard for trades"
     )
     async def leaderboard(self, ctx: discord.ApplicationContext):
