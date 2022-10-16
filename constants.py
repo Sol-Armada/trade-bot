@@ -3,8 +3,6 @@ from enum import Enum
 
 
 class Constants:
-    data_folder = "C:/Users/Ryan/PycharmProjects/discord-bot/data/Sol_Armada_Traders"
-
     trade_options = {
         "Planet/Moon Outpost": {
             "Aberdeen": [
