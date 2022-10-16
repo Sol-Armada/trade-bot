@@ -141,6 +141,7 @@ class SellForm(discord.ui.Modal):
         item_values = Utilities.get_values_from_modal(interaction)
         profit = 0
         pending = self.trader.pending_trades
+        first_trade_time = datetime.fromisoformat(self.trader.oldest_pending_trade.created_at)
 
         for trade in pending:
             trade.sell_quantity = int(trade.purchase_quantity)
@@ -149,9 +150,38 @@ class SellForm(discord.ui.Modal):
 
             profit += trade.calculated_profit
 
-        final_message = "Trades marked as completed\n" + '\n'.join(str(trade) for trade in pending)
+        embed = discord.Embed(title="Sell Summary")
+        embed.add_field(
+            name="Completed Trades",
+            value='\n'.join(str(trade) for trade in pending),
+            inline=False
+        )
 
-        await interaction.response.send_message(final_message)
+        sell_time = datetime.fromisoformat(self.trader.most_recent_trade.closed_at)
+        total_seconds = (sell_time - first_trade_time).seconds
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        embed.add_field(
+            name="Total Profit Earned",
+            value=f"{profit:,} aUEC profit earned in {minutes} minutes and {seconds} seconds.",
+            inline=False
+        )
+
+        profit_per_hour = int(profit * (3600 / total_seconds))
+        embed.add_field(
+            name="Profit Per Hour",
+            value=f"{profit_per_hour:,} aUEC",
+            inline=False
+        )
+
+        route = 'Route taken: ' + ' -> '.join(trade.purchase_location for trade in pending) + f' -> {self.trader.most_recent_trade.sell_location}'
+        embed.add_field(
+            name="Route Taken",
+            value=route,
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 async def trade_information_callback(interaction: discord.Interaction):
