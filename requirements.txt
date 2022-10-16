@@ -1,4 +1,4 @@
-py-cord==2.0.0
+py-cord==2.2.2
 snowflake-id==0.0.2
 python-dotenv==0.20.0
 python-Levenshtein==0.12.2

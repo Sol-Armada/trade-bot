@@ -58,7 +58,7 @@ class UpdateTask(commands.Cog):
             print(e)
 
     @check.error
-    async def check_error(seld, error):
+    async def check_error(self, error):
         print(error)
 
     @commands.slash_command()

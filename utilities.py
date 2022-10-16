@@ -2,7 +2,7 @@ from discord import Interaction
 from fuzzywuzzy import fuzz, process
 
 
-class Utilities():
+class Utilities:
     @staticmethod
     def get_values_from_modal(interaction: Interaction) -> dict:
         v = list(interaction.data.values())[1]
@@ -14,7 +14,7 @@ class Utilities():
 
     @staticmethod
     def get_fuzzy(query: str, items_to_search: list):
-        scores = [fuzz.ratio(query.lower(), value.lower()) for value in items_to_search]
+        scores = [fuzz.ratio(query, value) for value in items_to_search]
         scores = list(zip(scores, items_to_search))
         #  [(score, commodity), (score, commodity)]
         filtered_scores = [score for score in scores if score[0] >= 10]
