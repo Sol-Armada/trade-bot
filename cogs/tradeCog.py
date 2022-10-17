@@ -19,25 +19,27 @@ class LocationButtonSelect(discord.ui.View):
         self.trader = trader
         self.trade = Trade()
         self.trade.trader_id = trader.discord_id
-        recent_location = trader.most_recent_trade.purchase_location
-        most_used_location = trader.most_used_location
 
-        recent_location_button = discord.ui.Button(
-            label=recent_location,
-            custom_id=recent_location
-        )
-        recent_location_button.callback = self.button_callback
-        self.add_item(recent_location_button)
+        if trader.trade_history:
+            recent_location = trader.most_recent_trade.purchase_location
+            most_used_location = trader.most_used_location
 
-        if trader.most_used_location != recent_location:
-            most_used_location_button = discord.ui.Button(
-                label=most_used_location,
-                custom_id=most_used_location
+            recent_location_button = discord.ui.Button(
+                label=recent_location,
+                custom_id=recent_location
             )
-            most_used_location_button.callback = self.button_callback
-            self.add_item(most_used_location_button)
+            recent_location_button.callback = self.button_callback
+            self.add_item(recent_location_button)
 
-        button_goto_dropdown = discord.ui.Button(label="Other Location...")
+            if trader.most_used_location != recent_location:
+                most_used_location_button = discord.ui.Button(
+                    label=most_used_location,
+                    custom_id=most_used_location
+                )
+                most_used_location_button.callback = self.button_callback
+                self.add_item(most_used_location_button)
+
+        button_goto_dropdown = discord.ui.Button(label="Choose Location...")
         button_goto_dropdown.callback = self.initiate_dropdown_from_button
         self.add_item(button_goto_dropdown)
 
@@ -200,11 +202,11 @@ async def trade_information_callback(interaction: discord.Interaction):
 
     # add them to the modal
     m.add_item(discord.ui.InputText(
-        label="item", custom_id="item"))
+        label="item", custom_id="item", placeholder="COMMODITY PURCHASED"))
     m.add_item(discord.ui.InputText(
-        label="quantity", custom_id="purchase_quantity"))
+        label="quantity", custom_id="purchase_quantity", placeholder="TOTAL QUANTITY"))
     m.add_item(discord.ui.InputText(
-        label="price", custom_id="purchase_unit_price"))
+        label="Unit Price", custom_id="purchase_unit_price", placeholder="PRICE PER UNIT"))
 
     # send it
     await interaction.response.send_modal(modal=m)
@@ -231,7 +233,7 @@ async def cost_modal_callback(interaction: discord.Interaction):
             b.custom_id = commodity
             view.add_item(b)
 
-        await interaction.response.edit_message(view=view)
+        await interaction.response.edit_message(content="Which commodity?", view=view)
     else:
         trade.commodity = item_amt_cost['item']
         await final_callback(interaction)
