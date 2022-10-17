@@ -394,7 +394,7 @@ class TradeCog(commands.Cog):
                     inline=False
                 )
             await ctx.respond(embed=embed, ephemeral=True)
-        except IndexError:
+        except (IndexError, AttributeError):
             await ctx.respond(f"No record for {name} exists.", ephemeral=True)
 
 
