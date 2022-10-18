@@ -11,6 +11,7 @@ from datetime import datetime, timezone, timedelta
 from models.player import Player
 
 trades = {}
+data_folder = os.getenv("DATA_FOLDER")
 
 
 class LocationButtonSelect(discord.ui.View):
@@ -127,14 +128,17 @@ class OutpostSelect(discord.ui.View):
 
 
 class SellForm(discord.ui.Modal):
-    def __init__(self, commodities_dict, user_id):
+    def __init__(self, pending_trades, trader):
         super().__init__(title="Commodity Values (Selling)")
-        self.commodities_dict = commodities_dict
-        self.trader = Player(user_id)
-
-        for commodity in commodities_dict:
+        self.trader = trader
+        self.pending_trades = pending_trades
+        for trade in pending_trades:
             self.add_item(
-                discord.ui.InputText(label=f"{commodity} Unit Price (sell)", custom_id=commodity)
+                discord.ui.InputText(
+                    label=f"Selling {trade.purchase_quantity} units of {trade.commodity} for...",
+                    custom_id=trade.commodity,
+                    placeholder="aUEC"
+                )
             )
 
         self.callback = self.sell_form_callback
@@ -147,7 +151,8 @@ class SellForm(discord.ui.Modal):
 
         for trade in pending:
             trade.sell_quantity = int(trade.purchase_quantity)
-            trade.sell_price = float(item_values[trade.commodity].replace(',', ''))
+            inputted_sell_value_str = item_values[trade.commodity].replace(',', '')
+            trade.sell_price = int(inputted_sell_value_str) / trade.sell_quantity
             trade.mark_as_completed()
 
             profit += trade.calculated_profit
@@ -290,11 +295,7 @@ class TradeCog(commands.Cog):
             await ctx.respond("You have nothing to sell — we have no record of pending trades for you.")
             return
 
-        commodity_sell_values = {
-            pending.commodity: 0.00
-            for pending in pending_trades
-        }
-        await ctx.interaction.response.send_modal(SellForm(commodity_sell_values, ctx.author.id))
+        await ctx.interaction.response.send_modal(SellForm(pending_trades, trader))
 
     @commands.slash_command(
         description="Lost Cargo"
@@ -321,7 +322,7 @@ class TradeCog(commands.Cog):
     async def leaderboard(self, ctx: discord.ApplicationContext):
         traders = [
             Player(trader_id)
-            for trader_id in os.listdir(Constants.data_folder)
+            for trader_id in os.listdir(data_folder)
         ]
         traders.sort(key=lambda player: player.total_earned, reverse=True)
         ids = [t.discord_id for t in traders]
